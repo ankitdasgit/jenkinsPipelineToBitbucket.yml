@@ -35,7 +35,7 @@ pipelines:
           script:
             - echo "Running test cases"
             - cd src/BatchedAutomationTest
-            - dotnet test --configuration Release || true # Allow pipeline to continue even if tests fail
+            - dotnet test --configuration Release || true 
           
 
       - step:
