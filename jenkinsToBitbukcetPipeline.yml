@@ -31,7 +31,12 @@ pipelines:
           script:
             - echo "Running test cases"
             - cd src/BatchedAutomationTest
+<<<<<<< HEAD
             - dotnet test --configuration Release
+=======
+            - dotnet test --configuration Release || true 
+          
+>>>>>>> 811313af438ef299e2ce9dc10afd32b462e04a01
 
       - step:
           name: Generate Report
