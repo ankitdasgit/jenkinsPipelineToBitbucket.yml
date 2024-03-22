@@ -1,0 +1,107 @@
+image: public.ecr.aws/a1q8l8p3/bitbucket-pipeline:v2
+
+pipelines:
+  branches:
+    develop:
+    
+      - step:
+          name: Setup AWS credentials
+          size: 2x
+          script:
+            - echo "Setting up AWS credentials"
+            - aws configure set aws_access_key_id $AWS_Key
+            - aws configure set aws_secret_access_key $AWS_Secret
+            - aws configure set region us-east-2
+
+      - step: &build
+          name: Build 
+          size: 2x
+          script:
+            - echo "Logging into AWS CodeArtifact"
+            - aws --version
+            - aws configure set aws_access_key_id $AWS_Key
+            - aws configure set aws_secret_access_key $AWS_Secret
+            - aws configure set region us-east-2
+            - aws codeartifact login --tool npm --domain batched --repository npm-repo
+            - echo "Building project"
+            - aws ssm get-parameter --name "frontend-env" --with-decryption --output text --query "Parameter.Value" > .env
+            - npm i --legacy-peer-deps
+            - npm run-script build
+          
+
+      - step:
+          name: Run Test Cases
+          size: 2x
+          script:
+            - echo "Running test cases"
+            - cd src/BatchedAutomationTest
+            - dotnet test --configuration Release || true # Allow pipeline to continue even if tests fail
+          
+
+      - step:
+          name: Generate Report
+          size: 2x
+          script:
+            - echo "Generating report"
+            - cd src/BatchedAutomationTest/bin/Release/net6.0/Artifacts
+            - DATE=$(date +"%d-%m-%Y-%H-%M")
+            - aws s3 cp --recursive ./* s3://batched-ui-automation-dev/${DATE}/
+            
+
+clone:
+  depth: full
+
+options:
+  max-time: 20
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//another script
+
+definitions:
+ steps:
+    - step: &build
+        name: Build 
+        size: 2x
+        image: public.ecr.aws/a1q8l8p3/bitbucket-pipeline:v2
+        script:
+          - echo "Logging into AWS CodeArtifact"
+          - aws --version
+          - aws configure set aws_access_key_id $AWS_Key
+          - aws configure set aws_secret_access_key $AWS_Secret
+          - aws configure set region us-east-2
+          - aws codeartifact login --tool npm --domain batched --repository npm-repo
+          - echo "Building project"
+          - aws ssm get-parameter --name  "frontend-env" --with-decryption --output text  --query "Parameter.Value" > .env
+          - npm i --legacy-peer-deps
+          - npm run-script build
+
+ clone:
+  depth: full
+
+options:
+  max-time: 20
+
+pipelines:
+  branches:
+    develop:
+      - step: *build 
+
+
+
+
+
+
+
+
