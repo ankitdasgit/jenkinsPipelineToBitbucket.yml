@@ -5,13 +5,15 @@ pipelines:
     develop:
     
       - step:
-          name: Setup AWS credentials
+          name: Setup AWS credentials and CodeArtifact login
           size: 2x
           script:
             - echo "Setting up AWS credentials"
             - aws configure set aws_access_key_id $AWS_Key
             - aws configure set aws_secret_access_key $AWS_Secret
             - aws configure set region us-east-2
+            - echo "Logging into AWS CodeArtifact"
+            - aws codeartifact login --tool dotnet --repository nuget-repo --domain batched --domain-owner 061669522376
 
       - step: &build
           name: Build 
