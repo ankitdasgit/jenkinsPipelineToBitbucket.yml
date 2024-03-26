@@ -31,12 +31,7 @@ pipelines:
           script:
             - echo "Running test cases"
             - cd src/BatchedAutomationTest
-<<<<<<< HEAD
             - dotnet test --configuration Release
-=======
-            - dotnet test --configuration Release || true 
-          
->>>>>>> 811313af438ef299e2ce9dc10afd32b462e04a01
 
       - step:
           name: Generate Report
@@ -73,34 +68,34 @@ options:
 
 //another script
 
-definitions:
- steps:
-    - step: &build
-        name: Build 
-        size: 2x
-        image: public.ecr.aws/a1q8l8p3/bitbucket-pipeline:v2
-        script:
-          - echo "Logging into AWS CodeArtifact"
-          - aws --version
-          - aws configure set aws_access_key_id $AWS_Key
-          - aws configure set aws_secret_access_key $AWS_Secret
-          - aws configure set region us-east-2
-          - aws codeartifact login --tool npm --domain batched --repository npm-repo
-          - echo "Building project"
-          - aws ssm get-parameter --name  "frontend-env" --with-decryption --output text  --query "Parameter.Value" > .env
-          - npm i --legacy-peer-deps
-          - npm run-script build
+# definitions:
+#  steps:
+#     - step: &build
+#         name: Build 
+#         size: 2x
+#         image: public.ecr.aws/a1q8l8p3/bitbucket-pipeline:v2
+#         script:
+#           - echo "Logging into AWS CodeArtifact"
+#           - aws --version
+#           - aws configure set aws_access_key_id $AWS_Key
+#           - aws configure set aws_secret_access_key $AWS_Secret
+#           - aws configure set region us-east-2
+#           - aws codeartifact login --tool npm --domain batched --repository npm-repo
+#           - echo "Building project"
+#           - aws ssm get-parameter --name  "frontend-env" --with-decryption --output text  --query "Parameter.Value" > .env
+#           - npm i --legacy-peer-deps
+#           - npm run-script build
 
- clone:
-  depth: full
+#  clone:
+#   depth: full
 
-options:
-  max-time: 20
+# options:
+#   max-time: 20
 
-pipelines:
-  branches:
-    develop:
-      - step: *build 
+# pipelines:
+#   branches:
+#     develop:
+#       - step: *build 
 
 
 
